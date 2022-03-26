@@ -4,3 +4,7 @@ export 'package:almas_video/src/video_provider/video_provider.dart';
 export 'package:almas_video/src/video_provider/video_provider_file.dart';
 export 'package:almas_video/src/video_provider/video_provider_network.dart';
 export 'package:almas_video/src/video_provider/video_provider_memory.dart';
+
+export 'src/almas_video.dart';
+
+export 'src/widgets/video_viewport.dart';
