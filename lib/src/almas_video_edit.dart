@@ -1,21 +1,24 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:almas_video/src/edit/video_input.dart';
 import 'package:almas_video/src/almas_video.dart';
 import 'package:almas_video/src/edit/video_overlay.dart';
 import 'package:almas_video/src/models/file_progress.dart';
-import 'package:almas_video/src/operations/temp_file.dart';
 import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_session.dart';
 import 'package:ffmpeg_kit_flutter_full_gpl/session_state.dart';
 
 class AlmasVideoEdit {
   final AlmasVideo source;
   final Duration duration;
+  final File output;
 
   AlmasVideoEdit({
     required this.source,
     required this.duration,
+    required this.output,
   });
 
   final List<VideoOverlay> _overlays = [];
@@ -31,12 +34,11 @@ class AlmasVideoEdit {
   Stream<FileProgress> render() async* {
     final builder = StringBuffer();
 
-
     final inputs = await Future.wait(_inputs.map((i) => i.inputParam))
         .then((i) => i.join(" "));
     builder.write(inputs);
 
-    if(_overlays.isNotEmpty) {
+    if (_overlays.isNotEmpty) {
       // TODO
       final overlayComplexParam = _overlays.map((e) => e.filterParam).join(',');
       final overlayOrder = _overlays
@@ -49,17 +51,18 @@ class AlmasVideoEdit {
       builder.write(filter);
     }
 
-    final output = await getTemporaryFile('mp4');
     builder.write(' -c:v libx264 -pix_fmt yuv420p');
-    if(_overlays.isNotEmpty){
+    if (_overlays.isNotEmpty) {
       builder.write(' -map [out] -map 0:a?');
     }
     builder.write(' ${output.path}');
 
-    final streamController = StreamController<FileProgress>();
-    log('almas_video_edit $builder');
-    await Future.delayed(const Duration(milliseconds: 10));
+    FFmpegSession? _session;
+    final streamController = StreamController<FileProgress>.broadcast(
+      onCancel: () => _session?.cancel(),
+    );
     FFmpegKit.executeAsync(builder.toString(), (session) async {
+      _session = session;
       final id = session.getSessionId()!;
       final state = await session.getState();
       if (state == SessionState.completed) {
@@ -74,7 +77,6 @@ class AlmasVideoEdit {
       log(l.getMessage());
     }, (statistics) {
       if (statistics.getTime() > 0) {
-        log('almas_video_edit time: ' + statistics.getTime().toString());
         final progress = statistics.getTime() / duration.inMilliseconds;
         streamController.add(FileProgress(null, progress));
       }
