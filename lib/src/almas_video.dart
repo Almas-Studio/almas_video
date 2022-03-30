@@ -1,9 +1,11 @@
-import 'dart:ui';
+import 'dart:typed_data';
 
 import 'package:almas_video/src/models/video_info.dart';
 import 'package:almas_video/src/operations/info.dart';
 import 'package:almas_video/src/video_provider/video_provider.dart';
 import 'package:almas_video/src/video_provider/video_provider_network.dart';
+
+import 'operations/thumbnail.dart';
 
 class AlmasVideo {
   final VideoProvider video;
@@ -15,4 +17,6 @@ class AlmasVideo {
   }
 
   Future<VideoInfo> get info => resolveVideoInfo(video);
+
+  Future<Uint8List> get thumbnail => resolveVideoThumbnail(video);
 }

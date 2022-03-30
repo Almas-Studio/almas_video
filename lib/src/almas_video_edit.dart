@@ -6,19 +6,22 @@ import 'package:almas_video/src/edit/video_input.dart';
 import 'package:almas_video/src/almas_video.dart';
 import 'package:almas_video/src/edit/video_overlay.dart';
 import 'package:almas_video/src/models/file_progress.dart';
-import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
-import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_session.dart';
-import 'package:ffmpeg_kit_flutter_full_gpl/session_state.dart';
+import 'package:almas_video/src/operations/temp_file.dart';
+import 'package:ffmpeg_kit_flutter_min_gpl/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter_min_gpl/ffmpeg_session.dart';
+import 'package:ffmpeg_kit_flutter_min_gpl/session_state.dart';
 
 class AlmasVideoEdit {
   final AlmasVideo source;
   final Duration duration;
-  final File output;
+  final File? output;
+  final String encoder;
 
   AlmasVideoEdit({
     required this.source,
     required this.duration,
-    required this.output,
+     this.output,
+    this.encoder = 'libx264',
   });
 
   final List<VideoOverlay> _overlays = [];
@@ -51,11 +54,15 @@ class AlmasVideoEdit {
       builder.write(filter);
     }
 
-    builder.write(' -c:v libx264 -pix_fmt yuv420p');
+    builder.write(' -c:v $encoder -pix_fmt yuv420p');
     if (_overlays.isNotEmpty) {
       builder.write(' -map [out] -map 0:a?');
     }
-    builder.write(' ${output.path}');
+    final outFile = output ?? await getTemporaryFile('mp4');
+    if(outFile.existsSync()){
+      outFile.deleteSync();
+    }
+    builder.write(' ${outFile.path}');
 
     FFmpegSession? _session;
     final streamController = StreamController<FileProgress>.broadcast(
@@ -66,7 +73,7 @@ class AlmasVideoEdit {
       final id = session.getSessionId()!;
       final state = await session.getState();
       if (state == SessionState.completed) {
-        streamController.add(FileProgress(output, 1));
+        streamController.add(FileProgress(outFile, 1));
       } else if (state == SessionState.failed) {
         streamController
             .addError(await session.getFailStackTrace() ?? 'ffmpeg error');
@@ -74,7 +81,7 @@ class AlmasVideoEdit {
         streamController.add(const FileProgress(null, 0));
       }
     }, (l) {
-      log(l.getMessage());
+      //log(l.getMessage());
     }, (statistics) {
       if (statistics.getTime() > 0) {
         final progress = statistics.getTime() / duration.inMilliseconds;

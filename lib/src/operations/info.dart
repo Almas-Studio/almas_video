@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:almas_video/src/models/video_info.dart';
 import 'package:almas_video/src/video_provider/video_provider.dart';
-import 'package:ffmpeg_kit_flutter_full_gpl/ffprobe_kit.dart';
+import 'package:ffmpeg_kit_flutter_min_gpl/ffprobe_kit.dart';
 import 'package:flutter/material.dart';
 
 Future<VideoInfo> resolveVideoInfo(VideoProvider video) async {
