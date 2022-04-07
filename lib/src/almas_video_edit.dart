@@ -12,7 +12,7 @@ import 'package:ffmpeg_kit_flutter_min_gpl/ffmpeg_session.dart';
 import 'package:ffmpeg_kit_flutter_min_gpl/session_state.dart';
 
 class AlmasVideoEdit {
-  final AlmasVideo source;
+  final VideoInput source;
   final Duration duration;
   final File? output;
   final String encoder;
@@ -20,13 +20,13 @@ class AlmasVideoEdit {
   AlmasVideoEdit({
     required this.source,
     required this.duration,
-     this.output,
+    this.output,
     this.encoder = 'libx264',
   });
 
   final List<VideoOverlay> _overlays = [];
 
-  List<VideoInput> get _inputs => [VideoInput(video: source)]
+  List<VideoInput> get _inputs => [source]
       .followedBy(_overlays.map(
         (e) => VideoInput(image: e.image, video: e.video),
       ))
@@ -42,15 +42,20 @@ class AlmasVideoEdit {
     builder.write(inputs);
 
     if (_overlays.isNotEmpty) {
-      // TODO
-      final overlayComplexParam = _overlays.map((e) => e.filterParam).join(',');
-      final overlayOrder = _overlays
-          .asMap()
-          .map((i, e) => MapEntry(i, e.getOrderParam(i + 1)))
-          .values
-          .join();
+      // const filter = " -filter_complex [0][1]overlay=0:0[out1];[out1][2]overlay=200:300[out2];[out2][3]overlay=0:0[out]";
+      final overlayInPipes = List.generate(_overlays.length, (i) => '${i + 1}');
+      final backgroundInPipe =
+          List.generate(_overlays.length, (i) => i == 0 ? '0' : 'out$i');
+      final outPipes = List.generate(_overlays.length,
+          (i) => i == _overlays.length - 1 ? 'out' : 'out${i + 1}');
 
-      const filter = " -filter_complex [0][1]overlay=0:0[out]";
+      final overlayCommands = List.generate(
+        _overlays.length,
+        (i) => '[${backgroundInPipe[i]}][${overlayInPipes[i]}]'
+            '${_overlays[i].filterParam}[${outPipes[i]}]',
+      );
+
+      final filter = " -filter_complex ${overlayCommands.join(';')}";
       builder.write(filter);
     }
 
@@ -59,7 +64,7 @@ class AlmasVideoEdit {
       builder.write(' -map [out] -map 0:a?');
     }
     final outFile = output ?? await getTemporaryFile('mp4');
-    if(outFile.existsSync()){
+    if (outFile.existsSync()) {
       outFile.deleteSync();
     }
     builder.write(' ${outFile.path}');

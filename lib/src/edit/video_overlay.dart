@@ -20,6 +20,4 @@ class VideoOverlay {
   }) : assert(video != null || image != null, 'should have an image or video');
 
   String get filterParam => "overlay=${offset.dx.toInt()}:${offset.dy.toInt()}";
-
-  String getOrderParam(int i) => '[$i]';
 }
