@@ -45,8 +45,21 @@ class AlmasVideoEdit {
     builder.write(inputs);
 
     if (_overlays.isNotEmpty) {
-      // const filter = " -filter_complex [0][1]overlay=0:0[out1];[out1][2]overlay=200:300[out2];[out2][3]overlay=0:0[out]";
+      ///
+      /// pre process overlays
+      ///
       final overlayInPipes = List.generate(_overlays.length, (i) => '${i + 1}');
+      final overlayProcessedPipes = overlayInPipes.map((i) => 'p$i').toList();
+
+      final processCommands = List.generate(
+          _overlays.length,
+          (i) => '[${overlayInPipes[i]}]'
+              '${_overlays[i].preProcessingParam}'
+              '[${overlayProcessedPipes[i]}]');
+
+      ///
+      /// Apply Overlay
+      ///
       final backgroundInPipe =
           List.generate(_overlays.length, (i) => i == 0 ? '0' : 'out$i');
       final outPipes = List.generate(_overlays.length,
@@ -54,11 +67,11 @@ class AlmasVideoEdit {
 
       final overlayCommands = List.generate(
         _overlays.length,
-        (i) => '[${backgroundInPipe[i]}][${overlayInPipes[i]}]'
+        (i) => '[${backgroundInPipe[i]}][${overlayProcessedPipes[i]}]'
             '${_overlays[i].filterParam}[${outPipes[i]}]',
       );
 
-      final filter = " -filter_complex ${overlayCommands.join(';')}";
+      final filter = " -filter_complex ${processCommands.followedBy(overlayCommands).join(';')}";
       builder.write(filter);
     }
 
@@ -70,9 +83,9 @@ class AlmasVideoEdit {
     ///
     /// Video Duration
     ///
-    final length = '${duration.inHours}:${duration.inMinutes % 60}:${duration.inSeconds % 60}';
+    final length =
+        '${duration.inHours}:${duration.inMinutes % 60}:${duration.inSeconds % 60}';
     builder.write(' -t $length');
-
 
     ///
     /// Output File

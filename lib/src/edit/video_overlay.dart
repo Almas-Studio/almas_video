@@ -42,6 +42,6 @@ class VideoOverlay {
           "${duration!.inSeconds + start.inSeconds})'";
 
   String get sizeParam => size == null
-      ? ''
+      ? 'null'
       : 'scale=${size!.width.toInt()}:${size!.height.toInt()}';
 }
