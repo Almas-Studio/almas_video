@@ -26,6 +26,9 @@ class AlmasVideoEdit {
 
   final List<VideoOverlay> _overlays = [];
 
+  ///
+  /// Map Inputs
+  ///
   List<VideoInput> get _inputs => [source]
       .followedBy(_overlays.map(
         (e) => VideoInput(image: e.image, video: e.video),
@@ -61,13 +64,26 @@ class AlmasVideoEdit {
 
     builder.write(' -c:v $encoder -pix_fmt yuv420p');
     if (_overlays.isNotEmpty) {
-      builder.write(' -map [out] -map 0:a?');
+      builder.write(' -map [out] -map 1:a?'); //
     }
+
+    ///
+    /// Video Duration
+    ///
+    final length = '${duration.inHours}:${duration.inMinutes % 60}:${duration.inSeconds % 60}';
+    builder.write(' -t $length');
+
+
+    ///
+    /// Output File
+    ///
     final outFile = output ?? await getTemporaryFile('mp4');
     if (outFile.existsSync()) {
       outFile.deleteSync();
     }
     builder.write(' ${outFile.path}');
+
+    log(builder.toString());
 
     FFmpegSession? _session;
     final streamController = StreamController<FileProgress>.broadcast(
@@ -86,7 +102,7 @@ class AlmasVideoEdit {
         streamController.add(const FileProgress(null, 0));
       }
     }, (l) {
-      //log(l.getMessage());
+      log(l.getMessage());
     }, (statistics) {
       if (statistics.getTime() > 0) {
         final progress = statistics.getTime() / duration.inMilliseconds;

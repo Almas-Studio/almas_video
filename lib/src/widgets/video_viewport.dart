@@ -40,12 +40,11 @@ class _VideoViewportState extends VisibilityAwareState<VideoViewport> {
   Widget build(BuildContext context) {
     return _controller != null && _controller!.value.isInitialized
         ? AspectRatio(
-            aspectRatio: _controller!.value.aspectRatio,
-            child: VideoPlayer(_controller!),
-          )
+      aspectRatio: _controller!.value.aspectRatio,
+      child: VideoPlayer(_controller!),
+    )
         : Container();
   }
-
 
   @override
   void deactivate() {
@@ -56,7 +55,7 @@ class _VideoViewportState extends VisibilityAwareState<VideoViewport> {
   @override
   void onVisibilityChanged(WidgetVisibility visibility) {
     super.onVisibilityChanged(visibility);
-    switch(visibility){
+    switch (visibility) {
       case WidgetVisibility.VISIBLE:
         _controller?.play();
         break;

@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:almas_image/almas_image.dart';
 import 'package:almas_video/src/almas_video.dart';
 import 'package:almas_video/src/operations/almas_image_ext.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 
 class VideoInput {
   final AlmasImage? image;
