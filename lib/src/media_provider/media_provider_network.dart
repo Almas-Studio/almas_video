@@ -1,17 +1,17 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:almas_video/src/models/file_progress.dart';
-import 'package:almas_video/src/video_provider/video_provider.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:uuid/uuid.dart';
 
-class CachedNetworkVideo extends VideoProvider {
+import 'media_provider.dart';
+
+class CachedNetworkMedia extends MediaProvider {
   final String url;
   final Map<String, String>? headers;
   final String? cacheKey;
 
-  CachedNetworkVideo(
+  CachedNetworkMedia(
     this.url, {
     this.headers,
     this.cacheKey,

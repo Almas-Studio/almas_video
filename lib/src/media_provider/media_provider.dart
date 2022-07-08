@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:almas_video/src/models/file_progress.dart';
 
-abstract class VideoProvider {
+abstract class MediaProvider {
   Stream<FileProgress> resolve();
 
   Future<File> getFile() {

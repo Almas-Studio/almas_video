@@ -1,9 +1,10 @@
 import 'dart:io';
 
 import 'package:almas_video/src/models/file_progress.dart';
-import 'package:almas_video/src/video_provider/video_provider.dart';
 
-class FileVideo extends VideoProvider {
+import 'media_provider.dart';
+
+class FileVideo extends MediaProvider {
 
   final File file;
 
