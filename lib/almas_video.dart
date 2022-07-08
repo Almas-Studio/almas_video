@@ -14,3 +14,5 @@ export 'src/edit/video_overlay.dart';
 export 'src/edit/video_input.dart';
 
 export 'src/widgets/video_viewport.dart';
+
+export 'src/audio/almas_audio.dart';
