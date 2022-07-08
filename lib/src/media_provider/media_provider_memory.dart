@@ -18,4 +18,7 @@ class MemoryVideo extends MediaProvider {
     await file.writeAsBytes(bytes, flush: true);
     yield FileProgress(file, 1.0);
   }
+
+  @override
+  Future<Uint8List> getBytes() async => bytes;
 }

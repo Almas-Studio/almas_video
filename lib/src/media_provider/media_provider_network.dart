@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:almas_video/src/models/file_progress.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -46,4 +47,7 @@ class CachedNetworkMedia extends MediaProvider {
       rethrow;
     }
   }
+
+  @override
+  Future<Uint8List> getBytes() => getFile().then((f) => f.readAsBytes());
 }

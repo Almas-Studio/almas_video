@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:almas_video/src/models/file_progress.dart';
 
@@ -14,4 +15,7 @@ class FileVideo extends MediaProvider {
   Stream<FileProgress> resolve() async*{
     yield FileProgress(file, 1.0);
   }
+
+  @override
+  Future<Uint8List> getBytes() => file.readAsBytes();
 }
