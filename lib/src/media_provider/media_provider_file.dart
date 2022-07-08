@@ -5,11 +5,11 @@ import 'package:almas_video/src/models/file_progress.dart';
 
 import 'media_provider.dart';
 
-class FileVideo extends MediaProvider {
+class FileMedia extends MediaProvider {
 
   final File file;
 
-  FileVideo(this.file);
+  FileMedia(this.file);
 
   @override
   Stream<FileProgress> resolve() async*{

@@ -5,11 +5,11 @@ import 'package:almas_video/src/operations/temp_file.dart';
 
 import 'media_provider.dart';
 
-class MemoryVideo extends MediaProvider {
+class MemoryMedia extends MediaProvider {
   final Uint8List bytes;
   final String format;
 
-  MemoryVideo(this.bytes, {this.format = 'mp4'});
+  MemoryMedia(this.bytes, {this.format = 'mp4'});
 
   @override
   Stream<FileProgress> resolve() async* {

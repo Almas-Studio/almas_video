@@ -3,7 +3,6 @@ import 'package:almas_video/almas_video.dart';
 
 class AlmasAudio {
   final MediaProvider source;
-  final AlmasImage? thumbnail;
   final String format;
   final String name;
 
@@ -11,6 +10,5 @@ class AlmasAudio {
     required this.source,
     required this.name,
     required this.format,
-    this.thumbnail,
   });
 }
