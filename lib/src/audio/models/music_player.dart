@@ -1,11 +1,14 @@
 import 'package:almas_video/almas_video.dart';
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 
-class MusicPlayer with ChangeNotifier{
+class MusicPlayer with ChangeNotifier {
   final player = AudioPlayer();
+  AlmasAudio? audio;
 
-  void setSource(AlmasAudio audio) {
+  void setSource(AlmasAudio audio, {int? id, String? album, String? art}) {
+    this.audio = audio;
     final source = audio.source;
     if (source is FileMedia) {
       player.setFilePath(source.file.path);
@@ -13,11 +16,14 @@ class MusicPlayer with ChangeNotifier{
       final plSource = LockCachingAudioSource(
         Uri.parse(source.url),
         headers: source.headers,
-        tag: source.cacheKey,
+        tag: MediaItem(
+          id: (id ?? audio.name.hashCode).toString(),
+          title: audio.name,
+          album: album,
+          artUri: Uri.tryParse(art ?? '-'),
+        ),
       );
       player.setAudioSource(plSource);
     }
   }
-
-
 }
