@@ -26,7 +26,8 @@ class _VideoViewportState extends State<VideoViewport> {
         .then((fileProgress) => fileProgress.file)
         .then((file) {
       if (file == null) throw 'Video File is null';
-      _controller = VideoPlayerController.file(file)
+      _controller = VideoPlayerController.file(file,
+          videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true))
         ..initialize().then((_) {
           _controller?.setLooping(true);
           _controller?.play();
@@ -39,9 +40,9 @@ class _VideoViewportState extends State<VideoViewport> {
   Widget build(BuildContext context) {
     return _controller != null && _controller!.value.isInitialized
         ? AspectRatio(
-      aspectRatio: _controller!.value.aspectRatio,
-      child: VideoPlayer(_controller!),
-    )
+            aspectRatio: _controller!.value.aspectRatio,
+            child: VideoPlayer(_controller!),
+          )
         : Container();
   }
 
