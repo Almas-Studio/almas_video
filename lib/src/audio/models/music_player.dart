@@ -9,6 +9,7 @@ class MusicPlayer with ChangeNotifier {
 
   void setSource(AlmasAudio audio, {int? id, String? album, String? art}) {
     this.audio = audio;
+    player.setLoopMode(LoopMode.one);
     final source = audio.source;
     if (source is FileMedia) {
       player.setFilePath(source.file.path);
