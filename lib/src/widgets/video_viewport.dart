@@ -4,10 +4,12 @@ import 'package:video_player/video_player.dart';
 
 class VideoViewport extends StatefulWidget {
   final AlmasVideo video;
+  final bool playAllowed;
 
   const VideoViewport({
     Key? key,
     required this.video,
+    required this.playAllowed,
   }) : super(key: key);
 
   @override
@@ -37,6 +39,16 @@ class _VideoViewportState extends State<VideoViewport> {
   }
 
   @override
+  void didUpdateWidget(covariant VideoViewport oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.playAllowed) {
+      _controller?.play();
+    } else {
+      _controller?.pause();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return _controller != null && _controller!.value.isInitialized
         ? AspectRatio(
@@ -48,7 +60,7 @@ class _VideoViewportState extends State<VideoViewport> {
 
   @override
   void deactivate() {
-    super.deactivate();
     _controller?.pause();
+    super.deactivate();
   }
 }
