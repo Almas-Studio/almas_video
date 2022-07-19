@@ -63,4 +63,10 @@ class _VideoViewportState extends State<VideoViewport> {
     _controller?.pause();
     super.deactivate();
   }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
 }
